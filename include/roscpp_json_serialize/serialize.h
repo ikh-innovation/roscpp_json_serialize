@@ -3,6 +3,10 @@
 
 #include <ros/ros.h>
 #include <ros/message_operations.h>
+#include <std_msgs/String.h>
+
+//#include <iomanip>
+//#include <limits>
 
 namespace roscpp_json {
    
@@ -25,6 +29,7 @@ private:
     size_t initial_indent;
     bool indent_needs_handling;
     bool output_service_list;
+    bool only_bool;
     std::list<ParsingContext> contexts;
 
     ParsingContext& context()
@@ -109,7 +114,7 @@ private:
             stream() << "Infinity";
         }
         else {
-            stream() << value;
+            stream() << std::setprecision(std::numeric_limits<float>::max_digits10) << value;
         }
     }
 
@@ -126,7 +131,21 @@ private:
             stream() << "Infinity";
         }
         else {
+            stream() << std::setprecision(std::numeric_limits<double>::max_digits10) << value;
+        }
+    }
+
+    void add_key_value_impl(const std::string& key, const uint32_t& value)
+    {
+        stream() << "\"" << key << "\": ";
+        if (!only_bool) {
             stream() << value;
+        }
+        else if (value) {
+            stream() << "true";
+        }
+        else {
+            stream() << "false";
         }
     }
 
@@ -325,7 +344,7 @@ public:
         return *this;
     }
 
-    JSONStream(bool output_service_list=false) : current_indent(1), initial_indent(0), indent_needs_handling(false), output_service_list(output_service_list)
+    JSONStream(bool output_service_list=false, bool only_bool=false) : current_indent(1), initial_indent(0), indent_needs_handling(false), output_service_list(output_service_list), only_bool(only_bool)
     {
         contexts.push_back(ParsingContext());
     }
@@ -343,15 +362,17 @@ public:
         }
     }
 
+
 };
 
 template <typename MSG>
-std::string serialize(const MSG& msg, bool output_service_list=false)
+std::string serialize(const MSG& msg, bool output_service_list=false, bool only_bool=false)
 {
-    roscpp_json::JSONStream stream(output_service_list);
+    roscpp_json::JSONStream stream(output_service_list, only_bool);
     ros::message_operations::Printer<MSG>::stream(stream, "  ", msg);
     return stream.str();
 }
+
 
 } // namespace roscpp_json
 
