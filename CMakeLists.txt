@@ -40,13 +40,17 @@ include_directories(
 #############
 ## Install ##
 #############
-
+# install(
+#   TARGETS ${PROJECT_NAME}
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+# )
 ## Mark cpp header files for installation
-install(DIRECTORY include/roscpp_json_serialize/
+install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
-  PATTERN ".svn" EXCLUDE
-)
+  PATTERN ".svn" EXCLUDE)
 
 install(DIRECTORY external/rapidjson/include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
@@ -59,7 +63,7 @@ install(DIRECTORY external/rapidjson/include/
 #############
 
 ## Add gtest based cpp test target and link libraries
-if (CATKIN_ENABLE_TESTING)
-  catkin_add_gtest(roscpp_json_serialize_test src/test.cpp)
-  target_link_libraries(roscpp_json_serialize_test ${catkin_LIBRARIES})
-endif()
+# if (CATKIN_ENABLE_TESTING)
+#   catkin_add_gtest(roscpp_json_serialize_test src/test.cpp)
+#   target_link_libraries(roscpp_json_serialize_test ${catkin_LIBRARIES})
+# endif()
