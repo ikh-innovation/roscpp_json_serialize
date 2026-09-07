@@ -96,9 +96,28 @@ private:
         stream() << "\"" << key << "\": " << value.str();
     }
 
+    static std::string escape_json_string(const std::string& s)
+    {
+        std::string out;
+        out.reserve(s.size() + 8);
+        for (const char c : s) {
+            switch (c) {
+                case '"':  out += "\\\""; break;
+                case '\\': out += "\\\\"; break;
+                case '\b': out += "\\b";  break;
+                case '\f': out += "\\f";  break;
+                case '\n': out += "\\n";  break;
+                case '\r': out += "\\r";  break;
+                case '\t': out += "\\t";  break;
+                default:   out += c;      break;
+            }
+        }
+        return out;
+    }
+
     void add_key_value_impl(const std::string& key, const std::string& value)
     {
-        stream() << "\"" << key << "\": \"" << value << "\"";
+        stream() << "\"" << key << "\": \"" << escape_json_string(value) << "\"";
     }
 
     void add_key_value_impl(const std::string& key, const float& value)
@@ -195,7 +214,7 @@ private:
 
     void add_list_value_impl(const std::string& value)
     {
-        stream() << "\"" << value << "\"";
+        stream() << "\"" << escape_json_string(value) << "\"";
     }
 
     void handle_indent(size_t indent)
