@@ -109,7 +109,17 @@ private:
                 case '\n': out += "\\n";  break;
                 case '\r': out += "\\r";  break;
                 case '\t': out += "\\t";  break;
-                default:   out += c;      break;
+                default:
+                    if (static_cast<unsigned char>(c) < 0x20) {
+                        static const char* hex = "0123456789abcdef";
+                        out += "\\u00";
+                        out += hex[(c >> 4) & 0xF];
+                        out += hex[c & 0xF];
+                    }
+                    else {
+                        out += c;
+                    }
+                    break;
             }
         }
         return out;
